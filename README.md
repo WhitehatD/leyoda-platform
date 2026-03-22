@@ -190,7 +190,7 @@ Frontend  →  Backend  →  Database (PostgreSQL)
 
 ### 1. Industrial-Grade Verification Framework
 
-The platform boasts a rigorous 126+ test suite comprising over 13,000 lines of test code. Testing goes far beyond standard unit coverage to encompass **adversarial E2E verification** (`verify_flow.ps1`) and contract testing for all components:
+The platform boasts a rigorous 209+ test suite comprising over 35,000 lines of test code. Testing goes far beyond standard unit coverage to encompass **adversarial E2E verification** (`verify_flow.ps1`) and contract testing for all components:
 
 - **Singleton Testcontainers:** Database and external dependencies are managed as static singletons in tests, drastically cutting down context load times to achieve testing cadences upwards of 500+ LOC/hr during active hardening.
 - **Mandatory Schema Validation:** Every payload across the frontend API, backend proxy, and Python Signal Engine bounds check inputs rigidly, ensuring no malformed requests permeate the execution context.
@@ -283,46 +283,10 @@ Browser → Next.js BFF (/api/v1/*) → Spring Boot Backend (:8080/api/v1/*)
 | **Frontend Components** | 113 TSX files |
 | **BFF Proxy Routes** | 36 |
 | **Signal Engine Modules** | 62 Python files |
-| **Verification Fleet** | 126+ industrial-wide automated tests |
-| **Test Code LOC** | 13,000+ lines defining rigorous schema/flow boundaries |
+| **Verification Fleet** | 209+ industrial-wide automated test files |
+| **Test Code LOC** | 35,000+ lines defining rigorous schema/flow boundaries |
 | **Docker Compose Profiles**| Advanced layered composability structure mapped to local/VPS targets |
 | **CI/CD Workflows** | Decoupled cross-repo deployment automation mapping to singular domains |
-
----
-
-## Screenshots
-
-> All screenshots use demo data. No real user information is shown.
-
-<p align="center">
-  <strong>Investor Profile</strong><br/>
-  <img src="docs/screenshots/SCR-20251221-ppxr.png" alt="Investor Profile" width="800" />
-</p>
-
-<p align="center">
-  <strong>Messaging</strong><br/>
-  <img src="docs/screenshots/SCR-20251221-ppyg.png" alt="Messaging Interface" width="800" />
-</p>
-
-<p align="center">
-  <strong>Founder Analytics Dashboard</strong><br/>
-  <img src="docs/screenshots/SCR-20251221-pqbx.png" alt="Analytics Dashboard" width="800" />
-</p>
-
-<p align="center">
-  <strong>Contact Page</strong><br/>
-  <img src="docs/screenshots/SCR-20251221-pqek.png" alt="Contact Page" width="800" />
-</p>
-
-<p align="center">
-  <strong>Startup Profile Card</strong><br/>
-  <img src="docs/screenshots/SCR-20251221-pqcu.png" alt="Startup Profile" width="800" />
-</p>
-
-<p align="center">
-  <strong>Onboarding Flow</strong><br/>
-  <img src="docs/screenshots/SCR-20251221-pqgz.png" alt="Onboarding" width="800" />
-</p>
 
 ---
 
