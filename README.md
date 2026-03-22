@@ -295,7 +295,6 @@ Browser → Next.js BFF (/api/v1/*) → Spring Boot Backend (:8080/api/v1/*)
 **Alexandru Cioc**
 
 - GitHub: [@WhitehatD](https://github.com/WhitehatD)
-- University: Maastricht University / Fontys University of Applied Sciences
 - Location: Maastricht, Netherlands
 
 ---
