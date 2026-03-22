@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/Spring_Boot-3.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot 3.4" />
   <img src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 16" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
-  <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11" />
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12" />
   <img src="https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
   <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose" />
@@ -49,10 +49,11 @@ The European early-stage investment landscape is fragmented and opaque — found
 
 What makes it technically interesting:
 
-- A **6-stage AI intelligence pipeline** that transforms university research papers into ranked, investment-grade startup concepts
-- **Blue-green zero-downtime deployment** with automated health-check gating and instant rollback
+- A **6-stage AI intelligence pipeline** (Signal Engine) that transforms university research papers into ranked, investment-grade startup concepts
+- **Security-hardened two-phase authentication** with OpenID Connect (LinkedIn) and intelligent redirection
+- **Decoupled enterprise-grade blue-green deployments** spanning multiple repositories with zero-downtime hotswapping and automated rollback
+- **Industrial-grade verification framework** featuring over 13,000 lines of test code, singleton testcontainers, and adversarial E2E validation
 - **Three-tier input validation** spanning frontend schemas, pre-submission guards, and backend annotations
-- A **BFF (Backend-for-Frontend) proxy** architecture that isolates all authentication handling server-side
 
 ---
 
@@ -61,7 +62,8 @@ What makes it technically interesting:
 ```mermaid
 graph TB
     subgraph Internet
-        Client["Browser / Mobile"]
+        Client["Browser / Mobile<br/>(Mechanical Luxury UI)"]
+        LinkedIn["LinkedIn OIDC<br/>Provider"]
     end
 
     subgraph Reverse Proxy
@@ -71,7 +73,7 @@ graph TB
     subgraph Application Layer
         FE["Frontend<br/>Next.js 16 · React 19<br/>Tailwind CSS 4"]
         BE["Backend<br/>Spring Boot 3.4 · Java 21<br/>19 REST Controllers"]
-        SE["Signal Engine<br/>FastAPI · Python 3.11<br/>AI Pipeline"]
+        SE["Signal Engine Service<br/>FastAPI · Python 3.12<br/>AI Pipeline"]
     end
 
     subgraph Data Layer
@@ -85,13 +87,15 @@ graph TB
     end
 
     Client --> Nginx
+    Client --> LinkedIn
+    LinkedIn --> FE
     Nginx --> FE
     Nginx --> BE
     FE -- "36 BFF proxy routes" --> BE
     BE --> PG
     BE --> MIO
     BE --> AV
-    BE -- "proxy" --> SE
+    BE -- "Synchronous Proxy" --> SE
     SE --> PG
     SE --> SQ
 
@@ -107,18 +111,14 @@ graph TB
 
 ### Service Dependency Chain
 
-Services follow a strict healthcheck policy — nothing starts until its dependencies report healthy:
+Services follow a strict healthcheck policy — nothing starts until its dependencies report healthy. Cross-service domain separation guarantees Zero Trust machine identity for internal communications:
 
 ```text
 Frontend  →  Backend  →  Database (PostgreSQL)
-                     →  MinIO (Object Storage)
-                     →  ClamAV (Antivirus)
-                     →  Signal Engine (AI Pipeline)
+                      →  MinIO (Object Storage)
+                      →  ClamAV (Antivirus)
+                      →  Signal Engine (AI Pipeline)
 ```
-
-### Blue-Green Deployment
-
-Production runs a zero-downtime blue-green strategy. Two parallel application slots (Blue on ports `8080/3000`, Green on `8081/3001`) sit behind an Nginx upstream router. Deploys hot-swap traffic atomically with health-check gating and automatic rollback on failure.
 
 ---
 
@@ -133,16 +133,11 @@ Production runs a zero-downtime blue-green strategy. Two parallel application sl
 | **ORM** | Hibernate 6 + Spring Data JPA | Type-safe data access with spatial extensions |
 | **Database** | PostgreSQL 16 + PostGIS | Relational storage with geo-spatial query support |
 | **Migrations** | Flyway | 41 versioned, repeatable schema migrations |
-| **Auth** | Spring Security + JWT (HS256) | Stateless auth via HttpOnly cookies |
-| **OAuth** | LinkedIn (OIDC) · X (Twitter OAuth 2.0) | Social sign-in with profile prefilling |
+| **Auth** | Spring Security + JWT (HS256) | Stateless auth via HttpOnly cookies; Hardened request matchers |
+| **OAuth** | LinkedIn (OIDC) · X (Twitter OAuth 2.0) | Social sign-in with intelligent redirection and mandatory profile setup |
 | **Storage** | MinIO (S3-compatible) | Owner-isolated binary asset management |
 | **Antivirus** | ClamAV | File upload scanning before persistence |
-| **Email** | Mailgun (EU region) | Transactional email (waitlist, password reset) |
-| **GeoIP** | MaxMind GeoLite2 | IP-based visitor geolocation for analytics |
 | **Rate Limiting** | Bucket4j | In-memory token bucket algorithm |
-| **DTO Mapping** | MapStruct | Compile-time type-safe object mapping |
-| **API Docs** | Springdoc OpenAPI (Swagger) | Auto-generated REST API documentation |
-| **Build** | Gradle (Kotlin DSL) | Dependency management with JaCoCo coverage |
 
 ### Frontend
 
@@ -150,26 +145,22 @@ Production runs a zero-downtime blue-green strategy. Two parallel application sl
 |:------|:-----------|:----|
 | **Framework** | Next.js 16 (App Router) | SSR, ISR, API routes, middleware |
 | **UI** | React 19 | Server Components, concurrent features |
-| **Styling** | Tailwind CSS 4 | Utility-first CSS with custom design tokens |
-| **Components** | shadcn/ui + Radix | Accessible, headless component primitives |
+| **Styling** | Tailwind CSS 4 | Utility-first CSS with custom design tokens for "Mechanical Luxury" aesthetics |
+| **Components** | shadcn/ui + Radix | Accessible, headless component primitives with zero-latency tactile feedback |
 | **Forms** | React Hook Form + Zod | Performant forms with schema validation |
 | **Data Fetching** | SWR | Stale-while-revalidate caching strategy |
-| **Typography** | Inter · JetBrains Mono | Professional body text + monospaced data |
 | **Linting** | Biome | Unified lint and format (replaces ESLint + Prettier) |
 
 ### Signal Engine (AI Pipeline)
 
 | Layer | Technology | Why |
 |:------|:-----------|:----|
-| **Runtime** | Python 3.11 | AI/ML pipeline execution |
+| **Runtime** | Python 3.12 | AI/ML pipeline execution |
 | **API** | FastAPI + Uvicorn | Async REST API for pipeline orchestration |
-| **Signal Extraction** | OpenRouter LLMs | Structured forward-looking signal extraction from papers |
+| **Orchestration** | Trajector | 6-stage structured forward-looking signal extraction |
 | **Embeddings** | sentence-transformers (all-MiniLM-L6-v2) | 384-dim vectors for semantic clustering (CPU) |
-| **Clustering** | scikit-learn (KMeans) | Thematic signal grouping on L2-normalised embeddings |
 | **PDF Parsing** | PyMuPDF · pypdf | Scientific paper text extraction |
 | **Pipeline State** | SQLite (WAL mode) | Checkpoint/resume for long-running pipelines |
-| **Patent Data** | Google BigQuery | 100M+ worldwide patent records |
-| **Web Crawling** | aiohttp + BeautifulSoup | Async company intelligence gathering |
 
 ### Infrastructure
 
@@ -177,10 +168,8 @@ Production runs a zero-downtime blue-green strategy. Two parallel application sl
 |:------|:-----------|:----|
 | **Orchestration** | Docker Compose | Multi-service local and production environment |
 | **Reverse Proxy** | Nginx | TLS termination, routing, blue-green upstream switching |
-| **Deployment** | Blue-Green + Zero-Downtime | Atomic switchover with health-check gating |
-| **CI/CD** | GitHub Actions | Automated test + lint pipeline; manual-dispatch deploy |
-| **Monitoring** | Spring Actuator | `/actuator/health` for readiness probes |
-| **Container Network** | Docker bridge (isolated) | Internal-only communication between services |
+| **Deployment** | Blue-Green + Zero-Downtime | Atomic switchover with health-check gating across decoupled repos |
+| **Latency Mitigation** | Warm Sleep | Unified patterns to mitigate container cold-start delays |
 
 ---
 
@@ -188,69 +177,56 @@ Production runs a zero-downtime blue-green strategy. Two parallel application sl
 
 | Service | Responsibility |
 |:--------|:--------------|
-| **Backend** (Spring Boot) | 19 REST controllers, 22 business services, JWT auth, rate limiting, file validation, email, OAuth flows |
+| **Backend** (Spring Boot) | 19 REST controllers, 22 business services, JWT auth, rate limiting, file validation, unified proxy for Signal Engine |
 | **Frontend** (Next.js) | 113 TSX components, 36 BFF proxy routes, SSR, App Router, design system |
-| **Signal Engine** (FastAPI) | 6-stage AI pipeline (Trajector), 4 data crawlers, BD intelligence generation, opportunity scoring |
-| **PostgreSQL + PostGIS** | Relational data store with geo-spatial extensions, 41 Flyway migrations |
+| **Signal Engine** (FastAPI) | Extracted standalone service; runs the 6-stage AI pipeline, venture memos, calendar CRUD, and pipeline status endpoints |
+| **PostgreSQL + PostGIS** | Relational data store with geo-spatial extensions, 41 Flyway migrations including autonomous table management |
 | **MinIO** | S3-compatible object storage with owner-based access isolation |
-| **ClamAV** | Antivirus scanning for all user file uploads |
 | **Nginx** | TLS termination, reverse proxy, blue-green upstream routing |
 
 ---
 
 ## Engineering Highlights
 
-### 1. Swipe-to-Match Discovery Engine
+### 1. Industrial-Grade Verification Framework
 
-The matching engine uses a card-based swipe interface with three engagement types — **Interested**, **Pass**, and **Follow**. The system supports asymmetric persona experiences:
+The platform boasts a rigorous 126+ test suite comprising over 13,000 lines of test code. Testing goes far beyond standard unit coverage to encompass **adversarial E2E verification** (`verify_flow.ps1`) and contract testing for all components:
 
-- **Founders** see analytics on who viewed their profile, swipe rates, and engagement trends
-- **Investors** browse a discovery feed of startup profiles filtered by sector, stage, and geography
+- **Singleton Testcontainers:** Database and external dependencies are managed as static singletons in tests, drastically cutting down context load times to achieve testing cadences upwards of 500+ LOC/hr during active hardening.
+- **Mandatory Schema Validation:** Every payload across the frontend API, backend proxy, and Python Signal Engine bounds check inputs rigidly, ensuring no malformed requests permeate the execution context.
+- **Contract & Gap Closure:** A specialized Feb 2026 test gap closure initiative fortified structural endpoints involving complex multi-step state mutations (like user invites joining companies). 
 
-The frontend implements 3D card stacking with drag-and-release gesture physics. The backend processes match events asynchronously and maintains a mutual-interest graph for bilateral matching.
+### 2. Security-Hardened Two-Phase Authentication
 
-### 2. Blue-Green Zero-Downtime Deployments
+We built a complete OpenID Connect (OIDC) integration for LinkedIn, seamlessly bridged to a mandatory internal **Step 0 Profile Setup**:
 
-Production uses a custom blue-green orchestrator (`deploy-zero-downtime.sh`) that:
+- **Intelligent Redirection:** The OAuth callback handler correctly routes new vs. returning users. If a user authenticates via LinkedIn but lacks mandatory profile details (like a profile picture or role), they are gated inside the `Profile Setup` screen.
+- **Strict Request Matchers:** The Spring Security firewall enforces strict filter ordering, rejecting unauthenticated traffic traversing Next.js BFF routes before processing user-specific controllers.
+- **Zero-Latency UI:** The "Mechanical Luxury" frontend design language ensures immediate tactile feedback. Authentication transitions happen optimistically to prevent loading stutters.
 
-1. **Detects** the currently active slot (Blue or Green)
-2. **Builds** the inactive slot with the latest code
-3. **Starts** the new slot alongside the live one
-4. **Health-checks** both backend (`/actuator/health`) and frontend endpoints
-5. **Switches** Nginx upstream atomically — zero dropped requests
-6. **Drains** and gracefully stops the old slot (30s grace period)
+### 3. Decoupled Enterprise-Grade Hotswap Deployments
 
-If health checks fail, the deploy aborts automatically and traffic continues flowing to the existing slot. Rollback is instant via `--rollback`. The CI/CD pipeline (GitHub Actions) runs backend tests with Testcontainers and frontend type-checks/linting on every push, with manual-dispatch deployment to production.
+The backend application and the Python-powered Signal Engine are decoupled into isolated CI/CD pipelines, yet both rely on enterprise-grade zero-downtime hotswapping:
 
-### 3. Trajector — AI Signal Intelligence Pipeline
+1. **Independent Builds:** The Signal Engine natively builds on the VPS via specialized GitHub Actions to manage heavy PyTorch dependencies efficiently. 
+2. **Container Hotswapping:** The deploy script bootstraps a new container via `docker compose --profile signal-engine pull && up -d --no-deps`.
+3. **Rigorous Health Check:** The pipeline waits for up to 20 cycles against the `/health` REST endpoint of the newly spawned instance. If it drops connection or faults due to data-layer permissions, the pipeline triggers an automated instant rollback.
+4. **Traffic Transition:** Once healthy, traffic seamlessly switches to the new container signature via native internal Docker routing, totally shielding the Next.js frontend and Spring backends from the transition.
 
-The Signal Engine runs a 6-stage sequential pipeline called **Trajector** with checkpoint/resume support:
+### 4. Trajector — AI Signal Intelligence Pipeline
+
+The Signal Engine powers Leyoda's deep tech discovery via a 6-stage pipeline:
 
 ```text
 PDF Corpus → INGEST → EXTRACT → EMBED → CLUSTER → SYNTHESIZE → OUTPUT
   (PyMuPDF)  (chunks)  (signals) (vectors) (themes)  (opps)     (JSON/MD)
 ```
 
-- **Ingest** — Extracts text from PDFs, splits into overlapping 1,500-token chunks at sentence boundaries
-- **Extract** — LLM extracts forward-looking signals across 8 taxonomic categories (emerging methods, unique assets, translational cues, etc.)
-- **Embed** — Generates 384-dimensional dense vectors for semantic similarity
-- **Cluster** — Groups signals into thematic clusters via KMeans on L2-normalised embeddings
-- **Synthesize** — Converts high-potential clusters into scored startup concept cards using 15+ investability heuristics
-- **Output** — Writes executive briefs, opportunity cards, and signal dashboards
-
-Each opportunity is scored on a 0–100 weighted scale across 7 dimensions (Exit Viability 20%, Translational Proximity 20%, Defensibility 18%, Market Clarity 17%, Momentum 12%, Team Capability 8%, Timing 5%). Opportunities scoring below 40 are automatically rejected.
-
-### 4. Three-Tier Input Validation
-
-All user input passes through three independent validation layers:
-
-| Tier | Technology | Where |
-|:-----|:-----------|:------|
-| **1. Schema** | Zod (TypeScript) | Frontend — compile-time type-safe schemas |
-| **2. Pre-submission Guard** | Custom logic | Frontend — catches edge cases before network request |
-| **3. Backend Annotations** | JSR-303 (Jakarta Validation) | Backend — server-side validation mirroring frontend schemas |
-
-This ensures that no invalid data reaches the database regardless of how the API is called (browser, cURL, etc.) and provides instant user feedback during form interaction.
+- **Ingest** — Extracts text from PDFs natively using PyMuPDF.
+- **Extract** — LLMs extract forward-looking signals spanning emerging methods, translational cues, and unique assets.
+- **Embed & Cluster** — Groups signals into thematic clusters via KMeans on L2-normalised `sentence-transformers` embeddings.
+- **Synthesize** — Converts high-potential clusters into curated startup concept cards using extensive investability heuristics. Opportunities scoring below 40/100 are heavily discounted or dropped.
+- **Proxy Serving** — The Python backend dynamically serves Dashboards, Venture Memos, and Pipeline Progress via Next.js fetching via the Java Backend. 
 
 ### 5. BFF Proxy Architecture
 
@@ -260,12 +236,9 @@ The frontend proxies **all** backend requests through 36 Next.js API routes (`/a
 Browser → Next.js BFF (/api/v1/*) → Spring Boot Backend (:8080/api/v1/*)
 ```
 
-- JWT tokens are stored in **HttpOnly, Secure, SameSite** cookies — invisible to client-side JavaScript
-- The browser never learns the backend URL — complete API isolation
-- Server-side cookie injection/extraction happens in the BFF layer
-- CORS policies on the backend only whitelist the internal Docker network
-
-This eliminates common XSS-based token theft vectors and simplifies CORS configuration.
+- JWT tokens are stored in **HttpOnly, Secure, SameSite** cookies — invisible to client-side JavaScript.
+- Server-side cookie injection/extraction happens in the BFF layer.
+- The browser never learns the backend URL — complete API isolation, eliminating common XSS-based token theft vectors and simplifying CORS configuration.
 
 ---
 
@@ -273,10 +246,10 @@ This eliminates common XSS-based token theft vectors and simplifies CORS configu
 
 | Threat | Mitigation |
 |:-------|:-----------|
-| **Token theft (XSS)** | JWT stored in HttpOnly + Secure + SameSite cookies; BFF proxy hides tokens from JS |
-| **Brute force auth** | Per-endpoint rate limiting — Login: 10/min, Register: 5/min, Default: 60/min (Bucket4j) |
+| **Token theft (XSS)** | JWT stored in HttpOnly + Secure + SameSite cookies; BFF proxy hides tokens |
+| **Machine Context Leaks** | Zero Trust Machine identity with domain cross-service separation |
 | **Malware uploads** | ClamAV antivirus scan on every uploaded file before persistence to MinIO |
-| **Unauthorised file access** | Owner-based access control on MinIO — users can only access their own uploads |
+| **Unauthorised access** | Owner-based access control on MinIO; Strictly ordered Spring Security matchers |
 | **CSRF** | SameSite cookie policy + CORS origin whitelisting |
 | **API enumeration** | Backend URLs hidden behind Next.js BFF proxy; no direct browser→backend path |
 | **Password reset abuse** | 32-byte `SecureRandom` tokens, 1-hour TTL, single active token per user |
@@ -289,13 +262,11 @@ This eliminates common XSS-based token theft vectors and simplifies CORS configu
 | Category | Framework | Scope |
 |:---------|:----------|:------|
 | **Unit Tests** | JUnit 5 + Mockito | Service layer logic, JWT provider, rate limiting, file validation |
-| **Integration Tests** | Spring Boot Test + Testcontainers | Full controller→service→DB flows with real PostgreSQL |
-| **Security Tests** | Spring Security Test | Authentication/authorisation for protected endpoints |
-| **Edge Case Tests** | JUnit 5 (dedicated `*EdgeCasesTest`) | Boundary conditions, error handling, concurrent access |
-| **API Tests** | pytest + FastAPI TestClient | Signal Engine endpoints, pipeline stages |
-| **Pipeline Tests** | pytest | Ingest, cluster, synthesize, cache, config, schemas |
+| **Integration Tests** | Spring Boot Test + Testcontainers | Full controller→service→DB flows with real PostgreSQL in Singleton scale |
+| **Adversarial E2E** | PowerShell | Custom `verify_flow.ps1` to stress test edge authentication parameters |
+| **API Tests** | pytest + FastAPI TestClient | Signal Engine endpoints, pipeline stages, health probes |
 | **Frontend Validation** | Biome + TypeScript strict mode | Static analysis, lint, type-check, build validation |
-| **CI/CD** | GitHub Actions | Backend tests (Testcontainers), frontend lint + type-check + build on every push |
+| **CI/CD** | GitHub Actions | Backend tests (Testcontainers), frontend lint + type-check + build on push |
 
 ---
 
@@ -312,10 +283,10 @@ This eliminates common XSS-based token theft vectors and simplifies CORS configu
 | **Frontend Components** | 113 TSX files |
 | **BFF Proxy Routes** | 36 |
 | **Signal Engine Modules** | 62 Python files |
-| **Backend Test Files** | 37 |
-| **Signal Engine Test Files** | 10 |
-| **Docker Compose Files** | 3 (base + blue + green overlays) |
-| **CI/CD Workflows** | 2 (ci-cd + cleanup) |
+| **Verification Fleet** | 126+ industrial-wide automated tests |
+| **Test Code LOC** | 13,000+ lines defining rigorous schema/flow boundaries |
+| **Docker Compose Profiles**| Advanced layered composability structure mapped to local/VPS targets |
+| **CI/CD Workflows** | Decoupled cross-repo deployment automation mapping to singular domains |
 
 ---
 
