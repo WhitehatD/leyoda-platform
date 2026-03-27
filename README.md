@@ -213,9 +213,9 @@ The backend application and the Python-powered Signal Engine are decoupled into 
 3. **Rigorous Health Check:** The pipeline waits for up to 20 cycles against the `/health` REST endpoint of the newly spawned instance. If it drops connection or faults due to data-layer permissions, the pipeline triggers an automated instant rollback.
 4. **Traffic Transition:** Once healthy, traffic seamlessly switches to the new container signature via native internal Docker routing, totally shielding the Next.js frontend and Spring backends from the transition.
 
-### 4. Trajector — AI Signal Intelligence Pipeline
+### 4. Enterprise-Grade Trajector Pipeline Integration
 
-The Signal Engine powers Leyoda's deep tech discovery via a 6-stage pipeline:
+The core AI Signal Intelligence (Trajector) was an existing ML pipeline that I fully integrated and elevated to an enterprise-grade standalone service. It powers Leyoda's deep tech discovery via a 6-stage pipeline:
 
 ```text
 PDF Corpus → INGEST → EXTRACT → EMBED → CLUSTER → SYNTHESIZE → OUTPUT
