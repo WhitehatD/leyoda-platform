@@ -49,7 +49,7 @@ The European early-stage investment landscape is fragmented and opaque — found
 
 What makes it technically interesting:
 
-- A **6-stage AI intelligence pipeline** (Signal Engine) that transforms university research papers into ranked, investment-grade startup concepts
+- A **proprietary AI intelligence pipeline** (Signal Engine) that transforms university research papers into ranked, investment-grade startup concepts
 - **Security-hardened two-phase authentication** with OpenID Connect (LinkedIn) and intelligent redirection
 - **Decoupled enterprise-grade blue-green deployments** spanning multiple repositories with zero-downtime hotswapping and automated rollback
 - **Industrial-grade verification framework** featuring over 13,000 lines of test code, singleton testcontainers, and adversarial E2E validation
@@ -198,7 +198,39 @@ The platform boasts a rigorous 209+ test suite comprising over 35,000 lines of t
 
 ### 2. Security-Hardened Two-Phase Authentication
 
-We built a complete OpenID Connect (OIDC) integration for LinkedIn, seamlessly bridged to a mandatory internal **Step 0 Profile Setup**:
+We built a complete OpenID Connect (OIDC) integration for LinkedIn, seamlessly bridged to a mandatory internal **Step 0 Profile Setup**, governed by a robust, zero-trust perimeter:
+
+```mermaid
+sequenceDiagram
+    actor User as Investor/Founder
+    participant BFF as Next.js BFF
+    participant Auth as Spring Security Firewall
+    participant OIDC as LinkedIn OIDC
+    participant DB as PostgreSQL
+
+    User->>BFF: Click "Continue with LinkedIn"
+    BFF->>Auth: Request OAuth Redirect URI
+    Auth-->>BFF: 302 Found (LinkedIn Auth URL)
+    BFF-->>User: Redirect to LinkedIn
+    User->>OIDC: Authenticate & Consent
+    OIDC-->>Auth: Callback with Authorization Code
+    Auth->>OIDC: Exchange Code for Access Token
+    OIDC-->>Auth: ID Token & Profile Data
+    
+    rect rgb(20, 40, 20)
+        Note over Auth,DB: Zero-Trust Security Perimeter
+        Auth->>DB: Upsert User Profile
+        Auth->>Auth: Sign HS256 Stateless JWT
+    end
+    
+    Auth-->>BFF: Set-Cookie: JWT (HttpOnly, Secure, SameSite=Strict)
+    
+    alt Mandatory Profile Missing
+        BFF-->>User: 302 Redirect to /onboarding (Step 0)
+    else Profile Complete
+        BFF-->>User: 302 Redirect to /dashboard
+    end
+```
 
 - **Intelligent Redirection:** The OAuth callback handler correctly routes new vs. returning users. If a user authenticates via LinkedIn but lacks mandatory profile details (like a profile picture or role), they are gated inside the `Profile Setup` screen.
 - **Strict Request Matchers:** The Spring Security firewall enforces strict filter ordering, rejecting unauthenticated traffic traversing Next.js BFF routes before processing user-specific controllers.
@@ -213,21 +245,11 @@ The backend application and the Python-powered Signal Engine are decoupled into 
 3. **Rigorous Health Check:** The pipeline waits for up to 20 cycles against the `/health` REST endpoint of the newly spawned instance. If it drops connection or faults due to data-layer permissions, the pipeline triggers an automated instant rollback.
 4. **Traffic Transition:** Once healthy, traffic seamlessly switches to the new container signature via native internal Docker routing, totally shielding the Next.js frontend and Spring backends from the transition.
 
-### 4. Enterprise-Grade Trajector Pipeline Integration
+### 4. Enterprise-Grade AI Signal Intelligence
 
-The core AI Signal Intelligence (Trajector) was an existing ML pipeline that I fully integrated and elevated to an enterprise-grade standalone service. It powers Leyoda's deep tech discovery via a 6-stage pipeline:
+The core AI Signal Intelligence pipeline operates as a proprietary black-box engine within the Leyoda ecosystem. It is seamlessly integrated as a standalone service that ingests complex unstructured data and outputs high-fidelity investment signals. 
 
-```text
-PDF Corpus → INGEST → EXTRACT → EMBED → CLUSTER → SYNTHESIZE → OUTPUT
-  (PyMuPDF)  (chunks)  (signals) (vectors) (themes)  (opps)     (JSON/MD)
-```
-
-- **Ingest** — Extracts text natively using PyMuPDF.
-- **Extract** — LLMs extract forward-looking signals spanning emerging methods, translational cues, and unique assets.
-- **Embed & Cluster** — Groups signals into thematic clusters via KMeans on L2-normalised `sentence-transformers` embeddings.
-- **Synthesize** — Converts high-potential clusters into curated startup concept cards using extensive investability heuristics. 
-- **State Management & Checkpointing** — The pipeline employs a sophisticated `CheckpointManager` backed by a SQLite WAL-mode database allowing any of the 6 stages to fail and flawlessly resume without reprocessing 100-page academic corpora.
-- **Proxy Serving** — The Python FastAPI backend dynamically serves Dashboards, Venture Memos, and Pipeline Progress via Next.js fetching via the Java Backend. 
+To protect the intellectual property and competitive advantage of the analysis methodologies, the internal architecture, extraction mechanisms, and specific pipeline stages are kept strictly confidential. The system communicates securely with the rest of the application via strict proxy structures while maintaining robust state management and fault tolerance.
 
 ### 5. BFF Proxy Architecture
 
