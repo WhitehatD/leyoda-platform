@@ -222,11 +222,12 @@ PDF Corpus → INGEST → EXTRACT → EMBED → CLUSTER → SYNTHESIZE → OUTPU
   (PyMuPDF)  (chunks)  (signals) (vectors) (themes)  (opps)     (JSON/MD)
 ```
 
-- **Ingest** — Extracts text from PDFs natively using PyMuPDF.
+- **Ingest** — Extracts text natively using PyMuPDF.
 - **Extract** — LLMs extract forward-looking signals spanning emerging methods, translational cues, and unique assets.
 - **Embed & Cluster** — Groups signals into thematic clusters via KMeans on L2-normalised `sentence-transformers` embeddings.
-- **Synthesize** — Converts high-potential clusters into curated startup concept cards using extensive investability heuristics. Opportunities scoring below 40/100 are heavily discounted or dropped.
-- **Proxy Serving** — The Python backend dynamically serves Dashboards, Venture Memos, and Pipeline Progress via Next.js fetching via the Java Backend. 
+- **Synthesize** — Converts high-potential clusters into curated startup concept cards using extensive investability heuristics. 
+- **State Management & Checkpointing** — The pipeline employs a sophisticated `CheckpointManager` backed by a SQLite WAL-mode database allowing any of the 6 stages to fail and flawlessly resume without reprocessing 100-page academic corpora.
+- **Proxy Serving** — The Python FastAPI backend dynamically serves Dashboards, Venture Memos, and Pipeline Progress via Next.js fetching via the Java Backend. 
 
 ### 5. BFF Proxy Architecture
 
@@ -246,11 +247,13 @@ Browser → Next.js BFF (/api/v1/*) → Spring Boot Backend (:8080/api/v1/*)
 
 | Threat | Mitigation |
 |:-------|:-----------|
-| **Token theft (XSS)** | JWT stored in HttpOnly + Secure + SameSite cookies; BFF proxy hides tokens |
+| **Token theft (XSS)** | JWT stored in HttpOnly + Secure + SameSite cookies; BFF proxy hides tokens; `SessionCreationPolicy.STATELESS` |
 | **Machine Context Leaks** | Zero Trust Machine identity with domain cross-service separation |
 | **Malware uploads** | ClamAV antivirus scan on every uploaded file before persistence to MinIO |
-| **Unauthorised access** | Owner-based access control on MinIO; Strictly ordered Spring Security matchers |
-| **CSRF** | SameSite cookie policy + CORS origin whitelisting |
+| **Unauthorised access** | Owner-based access control via strictly ordered Spring Security matchers (`hasRole("ADMIN")` vs `authenticated()`) |
+| **Cross-Site Scripting (XSS)** | Enforced via strict `Content-Security-Policy` with explicit directives (`default-src 'self'`, `script-src 'self' 'unsafe-eval'`), overriding browser defaults |
+| **Network Interception** | `httpStrictTransportSecurity` (HSTS) max age set to 31,536,000 seconds (1 year) across all subdomains |
+| **CSRF** | SameSite cookie policy + CORS origin whitelisting (`CorsConfigurationSource`) |
 | **API enumeration** | Backend URLs hidden behind Next.js BFF proxy; no direct browser→backend path |
 | **Password reset abuse** | 32-byte `SecureRandom` tokens, 1-hour TTL, single active token per user |
 | **Invalid data injection** | 3-tier validation: Zod (frontend) → pre-submission guard → JSR-303 (backend) |
