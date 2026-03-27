@@ -283,6 +283,11 @@ Browser → Next.js BFF (/api/v1/*) → Spring Boot Backend (:8080/api/v1/*)
 | **Frontend Components** | 113 TSX files |
 | **BFF Proxy Routes** | 36 |
 | **Signal Engine Modules** | 62 Python files |
+| **Total Codebase Volume** | **90,000+ lines of code** spanning across all subsystems |
+| **Backend (Java)** | ~17,800 lines across 225 core component files |
+| **Frontend (TS/TSX)** | ~53,200 lines across 269 source files |
+| **Signal Engine (Python)** | ~16,800 lines across 62 execution modules |
+| **Database Properties** | 90 SQL & Flyway configurations |
 | **Verification Fleet** | 209+ industrial-wide automated test files |
 | **Test Code LOC** | 35,000+ lines defining rigorous schema/flow boundaries |
 | **Docker Compose Profiles**| Advanced layered composability structure mapped to local/VPS targets |
